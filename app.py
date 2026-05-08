@@ -8,7 +8,9 @@ app = Flask(__name__)
 MY_FACEBOOK = "https://www.facebook.com/kalochele.0070"
 MY_TIKTOK = "https://www.tiktok.com/@omor.60?_r=1&_t=ZS-95QqkGPZTVJ"
 MY_INSTAGRAM = "https://www.instagram.com/faruk.0070?igsh=MW1rbWwzZmNjMGJhMA=="
-PHOTO_PATH = "/sdcard/Download/faruk.jpg"
+
+# সরাসরি গিটহাবের র ইমেজ লিঙ্ক ব্যবহার করা হয়েছে যাতে ছবি ১০০% দেখা যায়
+PHOTO_URL = "https://raw.githubusercontent.com/inew66512-gif/omor-dl/main/faruk.jpg"
 
 HTML_CODE = """
 <!DOCTYPE html>
@@ -44,7 +46,7 @@ HTML_CODE = """
     </style>
 </head>
 <body>
-    <img src="/my_photo" class="profile-pic">
+    <img src="{{ profile_pic }}" class="profile-pic">
     <h1>OMOR DOWNLOADER</h1>
     <div class="main-box">
         <div class="input-group">
@@ -76,9 +78,9 @@ HTML_CODE = """
     </div>
 
     <div class="social-area">
-        <a href="FB_URL" target="_blank" class="social-btn fb"><i class="fab fa-facebook-f"></i></a>
-        <a href="TK_URL" target="_blank" class="social-btn tk"><i class="fab fa-tiktok"></i></a>
-        <a href="IG_URL" target="_blank" class="social-btn ig"><i class="fab fa-instagram"></i></a>
+        <a href="{{ fb }}" target="_blank" class="social-btn fb"><i class="fab fa-facebook-f"></i></a>
+        <a href="{{ tk }}" target="_blank" class="social-btn tk"><i class="fab fa-tiktok"></i></a>
+        <a href="{{ ig }}" target="_blank" class="social-btn ig"><i class="fab fa-instagram"></i></a>
     </div>
 
     <script>
@@ -87,17 +89,26 @@ HTML_CODE = """
                 const text = await navigator.clipboard.readText();
                 if(text) { 
                     document.getElementById('url').value = text; 
-                    fetchPreview(); 
                 }
             } catch(e) { alert("Please paste the link manually."); }
         }
+        // ... বাকি জাভাস্ক্রিপ্ট কোড এখানে থাকবে ...
+    </script>
+</body>
+</html>
+"""
 
-        async function fetchPreview() {
-            const url = document.getElementById('url').value;
-            const area = document.getElementById('thumbnail-area');
-            if(url.length < 10) { area.style.display='none'; return; }
-            
-            try {
+@app.route('/')
+def home():
+    return render_template_string(HTML_CODE, 
+                                 profile_pic=PHOTO_URL, 
+                                 fb=MY_FACEBOOK, 
+                                 tk=MY_TIKTOK, 
+                                 ig=MY_INSTAGRAM)
+
+if __name__ == '__main__':
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host='0.0.0.0', port=port)
                 const response = await fetch('/get_info?url=' + encodeURIComponent(url));
                 const data = await response.json();
                 if(data.thumbnail) {
